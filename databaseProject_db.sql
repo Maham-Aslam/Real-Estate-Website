@@ -16,9 +16,9 @@ accountType int not null
 )
 
 
+select * from Users
 
-
-
+--SignUp 
 create procedure AddData
 @UfName varchar(20),
 @UlName varchar(20), 
@@ -68,7 +68,7 @@ END
 
 select * from Users
 
-
+--Login 
 create procedure ULogin
 @email varchar(50),
 @password varchar (20),
@@ -95,8 +95,7 @@ end
 end
 
 
-
-
+--Forgotten password 
 CREATE PROCEDURE forgotpassword
 @Uemail varchar (50),
 @Upass varchar (20),
@@ -198,7 +197,7 @@ alter table Properties
 	    INSERT INTO Properties (usrId,city,propertyType,propertyLocation,sqArea)
 	  VALUES(3,'Lahore','Flat','Johar Town',6000)
 
-	 
+--property and agent 
 CREATE TABLE Shortlist(
 sUsrId int,
 sPropertyId int
@@ -239,7 +238,7 @@ VALUES(3,11)
 
 
 
-
+--adding subscribption users 
 CREATE Procedure Subscribeproc
 @email varchar(50),
 @pid int
@@ -253,6 +252,25 @@ set @userid=(SELECT userId FROM Users where email=@email)
 INSERT INTO Subscribe (usrId,agentId)
 VALUES(@userid,@subcribedid)
 END
+
+
+--new property 
+CREATE Procedure AddPropproc
+@locat varchar(50),
+@city varchar(50),
+@price int,
+@area int,
+@ptype varchar(50),
+@email varchar(50)
+
+AS
+BEGIN
+declare @id int
+set @id = (select userId from Users where email = @email)
+INSERT INTO Properties (usrId,city,propertyType,propertyLocation,sqArea,price)
+VALUES (@id,@city,@ptype,@locat,@area,@price)
+END
+
 
 
 CREATE Procedure Shortlistproc
@@ -269,6 +287,7 @@ END
 
 
 SELECT * FROM Shortlist
+
 drop procedure UpdateData
 create procedure UpdateData
 @UfName varchar(20),
@@ -392,7 +411,7 @@ alter table Offer
 
 	  SELECT * FROM Users
 
-
+	  --by real estate agent
 	    CREATE PROCEDURE placeOfferProc
 	  @pid int,
 	  @uemail varchar(50),
@@ -432,22 +451,12 @@ alter table Offer
 
 
 	  CREATE PROCEDURE ShowOffersProc
-
-
-
-
-
 	  SELECT * FROM Offer
 	  SELECT * FROM Properties
 	  SELECT * FROM Users
-
-
-
-	 
 	 
 	 SELECT propId,Oprice FROM Offer WHERE propId IN ( SELECT propertyId FROM Properties WHERE usrId=( SELECT userId FROM Users where email='maham@gmail.com'))
 
-	
 	 CREATE PROCEDURE AcceptOfferProc
 	   @propId int,
 	  @Oprice int,
@@ -460,6 +469,7 @@ alter table Offer
 	 END
 
 	 select * from Properties
+
 	  drop procedure RejectOfferProc
 	  CREATE PROCEDURE RejectOfferProc
 	  @propId int,
@@ -476,5 +486,21 @@ alter table Offer
 	 SELECT * FROM Offer
 	 SELECT * FROM Properties
 
-	 CREATE TABLE Rate(
-	 )
+	
+	CREATE TABLE Rating(
+	userId int,
+	rate int
+	)
+
+	select * from Rating
+
+	CREATE Procedure RateAgentProc
+	@email varchar(50),
+	@rate int
+	AS
+	BEGIN
+	declare @id int
+	set @id = (select userId from Users where email = @email)
+	INSERT INTO Rating (userId,rate)
+	VALUES (@id,@rate)
+	END
